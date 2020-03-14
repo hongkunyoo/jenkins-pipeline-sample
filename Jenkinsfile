@@ -31,12 +31,12 @@ volumes: [
     }
     stage('Build') {
       container('docker') {
-        sh "docker build -t ${PROJECT_NAME}:${gitCommit} ."
+        sh "docker build -t ${PROJECT_NAME}:${shortGitCommit} ."
       }
     }
     stage('Test') {
       container('docker') {
-        sh "docker run --entrypoint ./test $PROJECT_NAME:${gitCommit}"
+        sh "docker run --entrypoint /test ${PROJECT_NAME}:${shortGitCommit}"
       }
     }
     stage('Push') {
@@ -47,25 +47,23 @@ volumes: [
           passwordVariable: 'DOCKER_HUB_PASSWORD']]) {
           sh """
             docker login -u ${DOCKER_HUB_USER} -p ${DOCKER_HUB_PASSWORD}
-            docker tag ${PROJECT_NAME}:${gitCommit} ${DOCKER_HUB_USER}/${PROJECT_NAME}:${gitCommit}
-            docker push ${DOCKER_HUB_USER}/${PROJECT_NAME}:${gitCommit}
-            docker rmi ${PROJECT_NAME}:${gitCommit} ${DOCKER_HUB_USER}/${PROJECT_NAME}:${gitCommit}
+            docker tag ${PROJECT_NAME}:${shortGitCommit} ${DOCKER_HUB_USER}/${PROJECT_NAME}:${shortGitCommit}
+            docker push ${DOCKER_HUB_USER}/${PROJECT_NAME}:${shortGitCommit}
+            docker rmi ${PROJECT_NAME}:${shortGitCommit} ${DOCKER_HUB_USER}/${PROJECT_NAME}:${shortGitCommit}
             """
         }
       }
     }
-    stage('Run push') {
+    stage('Deploy') {
       withCredentials([[$class: 'UsernamePasswordMultiBinding',
           credentialsId: 'github',
           usernameVariable: 'GIT_USERNAME',
           passwordVariable: 'GIT_PASSWORD']]) {
           sh """
-            ls -alh .
             echo "print('plz work')" >> test.py
             git config --global user.name ${GIT_USERNAME}
             git config --global user.email ${GIT_USERNAME}@gmail.com
-            git commit -am 'msg'
-            git log --graph --decorate
+            git commit -am '$date'
             git push https://${GIT_USERNAME}:${GIT_PASSWORD}@github.com/${GIT_USERNAME}/jenkins-pipeline-sample.git master
             """
         }
