@@ -2,14 +2,14 @@ node {
     stage('Checkout') {
         def scm =   checkout scm
     }
-    stage('Build'){
+    stage('Test'){
         container('python:3.7') {
-            python test.py
+            sh "python test.py"
         }
     }
     stage('Build'){
         container('docker') {
-            docker build . -t plz
+            sh "docker build . -t plz"
         }
     }
 }
