@@ -15,6 +15,7 @@ volumes: [
     def gitBranch = myRepo.GIT_BRANCH
     def shortGitCommit = "${gitCommit[0..10]}"
     def previousGitCommit = sh(script: "git rev-parse ${gitCommit}~", returnStdout: true)
+    def PROJECT_NAME = ${JOB_NAME}
  
     stage('Checkout') {
       sh """
@@ -28,7 +29,12 @@ volumes: [
     }
     stage('Build') {
       container('docker') {
-        sh "docker build -t hongkunyoo/my-image:${gitCommit} ."
+        sh "docker build -t ${PROJECT_NAME}:${gitCommit} ."
+      }
+    }
+    stage('Test') {
+      container('docker') {
+        sh "docker run --entrypoint ./test ${PROJECT_NAME}:${gitCommit}"
       }
     }
     stage('Push') {
@@ -39,7 +45,9 @@ volumes: [
           passwordVariable: 'DOCKER_HUB_PASSWORD']]) {
           sh """
             docker login -u ${DOCKER_HUB_USER} -p ${DOCKER_HUB_PASSWORD}
-            docker push ${DOCKER_HUB_USER}/my-image:${gitCommit}
+            docker tag ${PROJECT_NAME}:${gitCommit} ${DOCKER_HUB_USER}/${PROJECT_NAME}:${gitCommit}
+            docker push ${DOCKER_HUB_USER}/${PROJECT_NAME}:${gitCommit}
+            docker rmi ${PROJECT_NAME}:${gitCommit} ${DOCKER_HUB_USER}/${PROJECT_NAME}:${gitCommit}
             """
         }
       }
@@ -56,7 +64,7 @@ volumes: [
             git config --global user.email ${GIT_USERNAME}@gmail.com
             git commit -am 'msg'
             git log --graph --decorate
-            git push https://${GIT_USERNAME}:${GIT_PASSWORD}@github.com/hongkunyoo/jenkins-pipeline-sample.git master
+            git push https://${GIT_USERNAME}:${GIT_PASSWORD}@github.com/${GIT_USERNAME}/jenkins-pipeline-sample.git master
             """
         }
     }
