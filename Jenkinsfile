@@ -17,10 +17,11 @@ volumes: [
     def previousGitCommit = sh(script: "git rev-parse ${gitCommit}~", returnStdout: true)
     
     environment {
-        PROJECT_NAME = ${JOB_NAME}
+        PROJECT_NAME = MY_JOB_NAME
     }
     stage('Checkout') {
       sh """
+        echo ${PROJECT_NAME}
         git checkout master
         echo currentBuildNumber, ${currentBuild.number}
         echo gitCommit, ${gitCommit}
@@ -31,7 +32,7 @@ volumes: [
     }
     stage('Build') {
       container('docker') {
-        sh "docker build -t env.PROJECT_NAME:${gitCommit} ."
+        sh "docker build -t ${PROJECT_NAME}:${gitCommit} ."
       }
     }
     stage('Test') {
