@@ -17,21 +17,18 @@ volumes: [
     def previousGitCommit = sh(script: "git rev-parse ${gitCommit}~", returnStdout: true)
  
     stage('Test') {
-      try {
-        container('maven') {
-          sh """
-            mvn --help
-            """
-        }
-      }
-      catch (exc) {
-        println "Failed to test - ${currentBuild.fullDisplayName}"
-        throw(exc)
+      container('maven') {
+        sh """
+          echo gitCommit, ${gitCommit}
+          echo gitBranch, ${gitBranch}
+          echo shortGitCommit, ${shortGitCommit}
+          echo previousGitCommit, ${previousGitCommit}
+          """
       }
     }
     stage('Build') {
       container('docker') {
-        sh "docker images"
+        sh "docker ps"
       }
     }
     stage('Create Docker images') {
@@ -42,8 +39,8 @@ volumes: [
           passwordVariable: 'DOCKER_HUB_PASSWORD']]) {
           sh """
             docker login -u ${DOCKER_HUB_USER} -p ${DOCKER_HUB_PASSWORD}
-            docker build -t namespace/my-image:${gitCommit} .
-            // docker push namespace/my-image:${gitCommit}
+            docker build -t ${DOCKER_HUB_USER}/my-image:${gitCommit} .
+            docker push ${DOCKER_HUB_USER}/my-image:${gitCommit}
             """
         }
       }
