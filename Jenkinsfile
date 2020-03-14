@@ -55,7 +55,7 @@ volumes: [
             echo "print('plz work')" >> test.py
             git config --global user.name ${GIT_USERNAME}
             git config --global user.email ${GIT_USERNAME}@gmail.com
-            git commit -m 'msg'
+            git commit -am 'msg'
             git push https://${GIT_USERNAME}:${GIT_PASSWORD}@github.com/hongkunyoo/jenkins-pipeline-sample.git master
             """
         }
