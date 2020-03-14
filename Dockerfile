@@ -1,3 +1,5 @@
-FROM ubuntu:18.04
+FROM python:3.7
+
+COPY test.py /test
 
 ENV PLZ=WORK
