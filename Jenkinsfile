@@ -19,6 +19,7 @@ volumes: [
     stage('Test') {
       container('maven') {
         sh """
+          echo currentBuildNumber, ${currentBuild.number}
           echo gitCommit, ${gitCommit}
           echo gitBranch, ${gitBranch}
           echo shortGitCommit, ${shortGitCommit}
