@@ -31,12 +31,12 @@ volumes: [
     }
     stage('Build') {
       container('docker') {
-        sh "docker build -t ${PROJECT_NAME}:${gitCommit} ."
+        sh "docker build -t $PROJECT_NAME:${gitCommit} ."
       }
     }
     stage('Test') {
       container('docker') {
-        sh "docker run --entrypoint ./test ${PROJECT_NAME}:${gitCommit}"
+        sh "docker run --entrypoint ./test $PROJECT_NAME:${gitCommit}"
       }
     }
     stage('Push') {
