@@ -15,8 +15,10 @@ volumes: [
     def gitBranch = myRepo.GIT_BRANCH
     def shortGitCommit = "${gitCommit[0..10]}"
     def previousGitCommit = sh(script: "git rev-parse ${gitCommit}~", returnStdout: true)
-    def PROJECT_NAME = ${JOB_NAME}
- 
+    
+    environment {
+        PROJECT_NAME = ${JOB_NAME}
+    }
     stage('Checkout') {
       sh """
         git checkout master
