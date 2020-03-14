@@ -46,9 +46,16 @@ volumes: [
       }
     }
     stage('Run push') {
-      sh 'echo "# plz work" >> test.py'
-      sh "git commit -m 'msg'"
-      sh('git push https://${GIT_USERNAME}:${GIT_PASSWORD}@github.com/hongkunyoo/jenkins-pipeline-sample.git master')
+      withCredentials([[$class: 'UsernamePasswordMultiBinding',
+          credentialsId: 'github',
+          usernameVariable: 'GIT_USERNAME',
+          passwordVariable: 'GIT_PASSWORD']]) {
+          sh """
+            echo "# plz work" >> test.py
+            git commit -m 'msg'
+            git push https://${GIT_USERNAME}:${GIT_PASSWORD}@github.com/hongkunyoo/jenkins-pipeline-sample.git master
+            """
+        }
     }
 
   }
