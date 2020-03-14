@@ -1,6 +1,4 @@
-def label = "worker-${UUID.randomUUID().toString()}"
-
-podTemplate(label: label, containers: [
+podTemplate(containers: [
   containerTemplate(name: 'maven', image: 'maven', command: 'cat', ttyEnabled: true),
   containerTemplate(name: 'docker', image: 'docker', command: 'cat', ttyEnabled: true),
   containerTemplate(name: 'kubectl', image: 'lachlanevenson/k8s-kubectl:v1.8.8', command: 'cat', ttyEnabled: true),
@@ -9,23 +7,22 @@ podTemplate(label: label, containers: [
 volumes: [
   hostPathVolume(mountPath: '/var/run/docker.sock', hostPath: '/var/run/docker.sock')
 ]) {
-  node(label) {
+  node {
     def myRepo = checkout scm
     def gitCommit = myRepo.GIT_COMMIT
     def gitBranch = myRepo.GIT_BRANCH
     def shortGitCommit = "${gitCommit[0..10]}"
     def previousGitCommit = sh(script: "git rev-parse ${gitCommit}~", returnStdout: true)
  
-    stage('Test') {
-      container('maven') {
-        sh """
-          echo currentBuildNumber, ${currentBuild.number}
-          echo gitCommit, ${gitCommit}
-          echo gitBranch, ${gitBranch}
-          echo shortGitCommit, ${shortGitCommit}
-          echo previousGitCommit, ${previousGitCommit}
-          """
-      }
+    stage('Checkout') {
+      sh """
+        git checkout master
+        echo currentBuildNumber, ${currentBuild.number}
+        echo gitCommit, ${gitCommit}
+        echo gitBranch, ${gitBranch}
+        echo shortGitCommit, ${shortGitCommit}
+        echo previousGitCommit, ${previousGitCommit}
+        """
     }
     stage('Build') {
       container('docker') {
@@ -58,7 +55,6 @@ volumes: [
             git config --global user.email ${GIT_USERNAME}@gmail.com
             git commit -am 'msg'
             git log --graph --decorate
-            git checkout master
             git push https://${GIT_USERNAME}:${GIT_PASSWORD}@github.com/hongkunyoo/jenkins-pipeline-sample.git master
             """
         }
