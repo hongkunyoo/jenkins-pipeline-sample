@@ -28,7 +28,7 @@ volumes: [
     }
     stage('Build') {
       container('docker') {
-        sh "docker build -t ${DOCKER_HUB_USER}/my-image:${gitCommit} ."
+        sh "docker build -t hongkunyoo/my-image:${gitCommit} ."
       }
     }
     stage('Push') {
