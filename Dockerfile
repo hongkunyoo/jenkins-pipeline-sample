@@ -1,3 +1,3 @@
 FROM ubuntu:18.04
 
-END PLZ=WORK
+ENV PLZ=WORK
