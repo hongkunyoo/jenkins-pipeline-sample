@@ -49,7 +49,7 @@ volumes: [
             docker login -u ${DOCKER_HUB_USER} -p ${DOCKER_HUB_PASSWORD}
             docker tag ${PROJECT_NAME}:${shortGitCommit} ${DOCKER_HUB_USER}/${PROJECT_NAME}:${shortGitCommit}
             docker push ${DOCKER_HUB_USER}/${PROJECT_NAME}:${shortGitCommit}
-            docker rmi ${PROJECT_NAME}:${shortGitCommit} ${DOCKER_HUB_USER}/${PROJECT_NAME}:${shortGitCommit}
+            docker rmi -f ${PROJECT_NAME}:${shortGitCommit} ${DOCKER_HUB_USER}/${PROJECT_NAME}:${shortGitCommit}
             """
         }
       }
