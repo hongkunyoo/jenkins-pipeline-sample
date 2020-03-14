@@ -45,15 +45,11 @@ volumes: [
         }
       }
     }
-    stage('Run kubectl') {
-      container('kubectl') {
-        sh "kubectl get pods"
-      }
+    stage('Run push') {
+      sh 'echo "# plz work" >> test.py'
+      sh "git commit -m 'msg'"
+      sh('git push https://${GIT_USERNAME}:${GIT_PASSWORD}@github.com/hongkunyoo/jenkins-pipeline-sample.git master')
     }
-    stage('Run helm') {
-      container('helm') {
-        sh "helm list"
-      }
-    }
+
   }
 }
