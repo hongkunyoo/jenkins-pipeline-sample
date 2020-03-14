@@ -31,7 +31,7 @@ volumes: [
     }
     stage('Build') {
       container('docker') {
-        sh "docker build -t $PROJECT_NAME:${gitCommit} ."
+        sh "docker build -t env.PROJECT_NAME:${gitCommit} ."
       }
     }
     stage('Test') {
