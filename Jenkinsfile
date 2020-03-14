@@ -51,7 +51,8 @@ volumes: [
           usernameVariable: 'GIT_USERNAME',
           passwordVariable: 'GIT_PASSWORD']]) {
           sh """
-            echo "# plz work" >> test.py
+            ls -alh .
+            echo "print('plz work')" >> test.py
             git config --global user.name ${GIT_USERNAME}
             git config --global user.email ${GIT_USERNAME}@gmail.com
             git commit -m 'msg'
